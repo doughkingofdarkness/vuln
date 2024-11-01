@@ -1,0 +1,200 @@
+local pass = 0
+local fail = 0 
+local unknown = 0
+
+print("\nExecutor Vulns Check")
+print("\n")
+print("Executor: " .. tostring(identifyexecutor()) .. "")
+print("✅ - Pass, ⛔ - Fail, ⏺️ - Unknown")
+print("Pass = Blocked Function")
+print("Fail = The Function isn't blocked")
+print("Unknown = The Vulns can't even be Used on " .. tostring(identifyexecutor()))
+print("\n")
+
+local blockedFunctions = Instance.new("DataStoreIncrementOptions")
+
+local function insertBlockedFunction(func)
+    blockedFunctions:SetMetadata({ func = func })
+end
+
+local function checkFunction(funcCall, funcName, funcDescription)
+    task.spawn(function()
+        local success, errorMsg = pcall(funcCall)
+        
+        if success then
+            fail = fail + 1
+            error("  ⛔ " .. funcDescription)
+        else
+            pass = pass + 1
+            print("  ✅ " .. funcDescription)
+            insertBlockedFunction(funcName)
+        end
+    end)
+end
+
+local function runTests()
+    local tests = {
+        -- List of test functions
+        {function() game:GetService("HttpRbxApiService"):PostAsync() end, 'game:GetService("HttpRbxApiService"):PostAsync()', "PostAsync"},
+        {function() game:GetService("HttpRbxApiService"):PostAsyncFullUrl() end, 'game:GetService("HttpRbxApiService"):PostAsyncFullUrl()', "PostAsyncFullUrl"},
+        {function() game:GetService("HttpRbxApiService"):GetAsync() end, 'game:GetService("HttpRbxApiService"):GetAsync()', "GetAsync"},
+        {function() game:GetService("HttpRbxApiService"):GetAsyncFullUrl() end, 'game:GetService("HttpRbxApiService"):GetAsyncFullUrl()', "GetAsyncFullUrl"},
+        {function() game:GetService("HttpRbxApiService"):RequestAsync() end, 'game:GetService("HttpRbxApiService"):RequestAsync()', "RequestAsync"},
+        {function() game:GetService("ScriptContext"):AddCoreScriptLocal() end, 'game:GetService("ScriptContext"):AddCoreScriptLocal()', "AddCoreScriptLocal"},
+        {function() game:GetService("BrowserService"):EmitHybridEvent() end, 'game:GetService("BrowserService"):EmitHybridEvent()', "EmitHybridEvent"},
+        {function() game:GetService("BrowserService"):ExecuteJavaScript() end, 'game:GetService("BrowserService"):ExecuteJavaScript()', "ExecuteJavaScript"},
+        {function() game:GetService("BrowserService"):OpenBrowserWindow() end, 'game:GetService("BrowserService"):OpenBrowserWindow()', "OpenBrowserWindow"},
+        {function() game:GetService("BrowserService"):OpenNativeOverlay() end, 'game:GetService("BrowserService"):OpenNativeOverlay()', "OpenNativeOverlay"},
+        {function() game:GetService("BrowserService"):ReturnToJavaScript() end, 'game:GetService("BrowserService"):ReturnToJavaScript()', "ReturnToJavaScript"},
+        {function() game:GetService("BrowserService"):SendCommand() end, 'game:GetService("BrowserService"):SendCommand()', "SendCommand"},
+        {function() game:GetService("MarketplaceService"):GetRobuxBalance() end, 'game:GetService("MarketplaceService"):GetRobuxBalance()', "GetRobuxBalance"},
+        {function() game:GetService("MarketplaceService"):PerformPurchase() end, 'game:GetService("MarketplaceService"):PerformPurchase()', "PerformPurchase"},
+        {function() game:GetService("MarketplaceService"):PerformPurchaseV2() end, 'game:GetService("MarketplaceService"):PerformPurchaseV2()', "PerformPurchaseV2"},
+        {function() game:GetService("MarketplaceService"):PromptBundlePurchase() end, 'game:GetService("MarketplaceService"):PromptBundlePurchase()', "PromptBundlePurchase"},
+        {function() game:GetService("MarketplaceService"):PromptGamePassPurchase() end, 'game:GetService("MarketplaceService"):PromptGamePassPurchase()', "PromptGamePassPurchase"},
+        {function() game:GetService("MarketplaceService"):PromptProductPurchase() end, 'game:GetService("MarketplaceService"):PromptProductPurchase()', "PromptProductPurchase"},
+        {function() game:GetService("MarketplaceService"):PromptPurchase() end, 'game:GetService("MarketplaceService"):PromptPurchase()', "PromptPurchase"},
+        {function() game:GetService("MarketplaceService"):PromptRobloxPurchase() end, 'game:GetService("MarketplaceService"):PromptRobloxPurchase()', "PromptRobloxPurchase"},
+        {function() game:GetService("MarketplaceService"):PromptThirdPartyPurchase() end, 'game:GetService("MarketplaceService"):PromptThirdPartyPurchase()', "PromptThirdPartyPurchase"},
+        {function() game:GetService("HttpService"):RequestInternal() end, 'game:GetService("HttpService"):RequestInternal()', "RequestInternal"},
+        {function() game:GetService("GuiService"):OpenBrowserWindow() end, 'game:GetService("GuiService"):OpenBrowserWindow()', "OpenBrowserWindow"},
+        {function() game:GetService("GuiService"):OpenNativeOverlay() end, 'game:GetService("GuiService"):OpenNativeOverlay()', "OpenNativeOverlay"},
+        {function() game:GetService("OpenCloudService"):HttpRequestAsync() end, 'game:GetService("OpenCloudService"):HttpRequestAsync()', "HttpRequestAsync"},
+        {function() game:GetService("CoreGui"):TakeScreenshot() end, 'game:GetService("CoreGui"):TakeScreenshot()', "TakeScreenshot"},
+        {function() game:GetService("CoreGui"):ToggleRecording() end, 'game:GetService("CoreGui"):ToggleRecording()', "ToggleRecording"},
+        {function() game:GetService("MessageBusService"):Call() end, 'game:GetService("MessageBusService"):Call()', "Call"},
+        {function() game:GetService("MessageBusService"):GetLast() end, 'game:GetService("MessageBusService"):GetLast()', "GetLast"},
+        {function() game:GetService("MessageBusService"):GetMessageId() end, 'game:GetService("MessageBusService"):GetMessageId()', "GetMessageId"},
+        {function() game:GetService("MessageBusService"):GetProtocolMethodRequestMessageId() end, 'game:GetService("MessageBusService"):GetProtocolMethodRequestMessageId()', "GetProtocolMethodRequestMessageId"},
+        {function() game:GetService("MessageBusService"):GetProtocolMethodResponseMessageId() end, 'game:GetService("MessageBusService"):GetProtocolMethodResponseMessageId()', "GetProtocolMethodResponseMessageId"},
+        {function() game:GetService("MessageBusService"):MakeRequest() end, 'game:GetService("MessageBusService"):MakeRequest()', "MakeRequest"},
+        {function() game:GetService("MessageBusService"):Publish() end, 'game:GetService("MessageBusService"):Publish()', "Publish"},
+        {function() game:GetService("MessageBusService"):PublishProtocolMethodRequest() end, 'game:GetService("MessageBusService"):PublishProtocolMethodRequest()', "PublishProtocolMethodRequest"},
+        {function() game:GetService("MessageBusService"):PublishProtocolMethodResponse() end, 'game:GetService("MessageBusService"):PublishProtocolMethodResponse()', "PublishProtocolMethodResponse"},
+        {function() game:GetService("MessageBusService"):Subscribe() end, 'game:GetService("MessageBusService"):Subscribe()', "Subscribe"},
+        {function() game:GetService("MessageBusService"):SubscribeToProtocolMethodRequest() end, 'game:GetService("MessageBusService"):SubscribeToProtocolMethodRequest()', "SubscribeToProtocolMethodRequest"},
+        {function() game:GetService("MessageBusService"):SubscribeToProtocolMethodResponse() end, 'game:GetService("MessageBusService"):SubscribeToProtocolMethodResponse()', "SubscribeToProtocolMethodResponse"},
+        {function() game:Load() end, 'game:Load()', "Load"},
+        {function() game:OpenScreenshotsFolder() end, 'game:OpenScreenshotsFolder()', "OpenScreenshotsFolder"},
+        {function() game:GetService("CoreGui"):OpenVideosFolder() end, 'game:GetService("CoreGui"):OpenVideosFolder()', "OpenVideosFolder"},
+        {function() game:GetService("OmniRecommendationsService"):MakeRequest() end, 'game:GetService("OmniRecommendationsService"):MakeRequest()', "MakeRequest"},
+        {function() game:GetService("Players"):ReportAbuse() end, 'game:GetService("Players"):ReportAbuse()', "ReportAbuse"},
+        {function() game:GetService("Players"):ReportAbuseV3() end, 'game:GetService("Players"):ReportAbuseV3()', "ReportAbuseV3"},
+    }
+
+    for _, test in ipairs(tests) do
+        checkFunction(test[1], test[2], test[3])
+        task.wait()
+    end
+end
+
+local function runMiscTests()
+    local success, ip = pcall(function() 
+        return game:HttpGet("https://api.ipify.org") 
+    end)
+
+    if not success or ip == "Argument 1 missing or nil" then
+        print("  ✅ IP Logger Prevented")
+    else
+        local privacymatters = string.sub(ip, 1, -9)
+        print("  ⛔ IP Logger Not Prevented (privacy matters tho): " .. privacymatters .. " Not Printing more")
+    end
+
+    local success, webhookResponse = pcall(function() 
+        return game:HttpGet("https://discord.com/api/webhooks/1299730877814669372/0qRYN_HWAJ36w5pwGqE_dEuVREhCJoTdU_rFDsNx2vdj-zrR2pKeTZr1cOUCS6CFuMo2") 
+    end)
+
+    if not success then
+        print("  ✅ Webhook Links Prevented")
+        pass = pass + 1
+    else
+        print("  ⛔ Webhook Links Not Prevented")
+        fail = fail + 1
+    end
+
+    task.spawn(function()
+        local s, e = pcall(function() 
+            getgenv().REQUEST_RESULT = request({ Url = "https://economy.roblox.com/v1/user/currency", Method = "GET" }) 
+        end)
+
+        if e == ":1: attempt to call a nil value" then
+            unknown = unknown + 1
+            warn("  ⏺️ request (Executor does not support request function)")
+            task.wait(99999999999) 
+            return
+        end
+        if not s then
+            pass = pass + 1
+            print("  ✅ request | Function call went error: " .. tostring(e))
+            return
+        end
+        local str = tostring(REQUEST_RESULT.Body)
+        local pattern = '^{"robux":'
+        local st, en = string.find(str, pattern)
+
+        if st == 1 then
+            fail = fail + 1
+            error("  ⛔ request: " .. str)
+        else
+            pass = pass + 1
+            print("  ✅ request")
+        end
+    end)
+
+    task.wait(0.3)
+
+    task.spawn(function()
+        local s, e = pcall(function() 
+            getgenv().GAME_HTTPGET_RESULT = game:HttpGet("https://economy.roblox.com/v1/user/currency") 
+        end)
+
+        if e == ":1: attempt to call a nil value" then
+            unknown = unknown + 1
+            warn("  ⏺️ game:HttpGet (Executor does not support game:HttpGet function)")
+            task.wait(99999999999) 
+            return
+        end
+
+        if not s then
+            fail = fail + 1
+            print("  ⛔ game:HttpGet executed without error but should not have succeeded: " .. tostring(e))
+            return
+        end
+
+        print("  ✅ game:HttpGet executed without blocking.")
+    end)
+
+
+    task.spawn(function()
+        if hookmetamethod then
+            local oldHook = hookmetamethod(game, "__index", function(a, b)
+                task.spawn(function()
+                    local success, output = pcall(function()
+                        return loadstring("return 'Hello from LocalScript'")()
+                    end)
+
+                    if success then
+                        print("  ✅ Escaping Executor's Environment & Running as LocalScript")
+                    else
+                        warn("  ⛔ Escaping Executor's Environment & Running as LocalScript - " .. tostring(output))
+                    end
+                end)
+                return oldHook(a, b)
+            end)
+        else
+            warn("  ⏺️ Escaping Executor's Environment & Running as LocalScript - hookmetamethod not supported.")
+        end
+    end)
+end
+runTests()
+runMiscTests()
+
+task.wait(0.5)
+
+local rate = math.round((pass / (pass + fail + unknown)) * 100)
+local outOf = pass .. " out of " .. (pass + fail + unknown)
+
+print("\nVulnerability Check Summary - " .. tostring(identifyexecutor()))
+print("✅ " .. rate .. "% (" .. outOf .. ")")
+print("⛔ " .. fail .. "")
+print("⏺️ " .. unknown .. "")
