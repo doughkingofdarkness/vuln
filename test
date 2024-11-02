@@ -23,7 +23,7 @@ local function checkFunction(funcCall, funcName, funcDescription)
         
         if success then
             fail = fail + 1
-            error("  ⛔ " .. funcDescription)
+            print("  ⛔ " .. funcDescription)
         else
             pass = pass + 1
             print("  ✅ " .. funcDescription)
@@ -34,7 +34,6 @@ end
 
 local function runTests()
     local tests = {
-        -- List of test functions
         {function() game:GetService("HttpRbxApiService"):PostAsync() end, 'game:GetService("HttpRbxApiService"):PostAsync()', "PostAsync"},
         {function() game:GetService("HttpRbxApiService"):PostAsyncFullUrl() end, 'game:GetService("HttpRbxApiService"):PostAsyncFullUrl()', "PostAsyncFullUrl"},
         {function() game:GetService("HttpRbxApiService"):GetAsync() end, 'game:GetService("HttpRbxApiService"):GetAsync()', "GetAsync"},
@@ -134,7 +133,7 @@ local function runMiscTests()
 
         if st == 1 then
             fail = fail + 1
-            error("  ⛔ request: " .. str)
+            print("  ⛔ request: " .. str)
         else
             pass = pass + 1
             print("  ✅ request")
@@ -176,7 +175,7 @@ local function runMiscTests()
                     if success then
                         print("  ✅ Escaping Executor's Environment & Running as LocalScript")
                     else
-                        warn("  ⛔ Escaping Executor's Environment & Running as LocalScript - " .. tostring(output))
+                        print("  ⛔ Escaping Executor's Environment & Running as LocalScript - " .. tostring(output))
                     end
                 end)
                 return oldHook(a, b)
